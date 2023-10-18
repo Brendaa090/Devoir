@@ -1,0 +1,152 @@
+import tkinter as tk
+import tkinter.ttk as ttk
+
+# Titulo da janela
+janela = tk.Tk()
+janela.title('Cadastro')
+
+frm_rd_btn = tk.Frame(janela)
+frm_rd_btn.pack(fill=tk.X)
+
+#um frame pra cada tipo de form
+
+frm_pf = tk.Frame()
+frm_est = tk.Frame()
+frm_com = tk.Frame()
+
+# Criando modo de botão
+mode = tk.StringVar(janela)
+mode.set('pf')
+
+# Mudando o modo do botão
+def change_mode():
+  if mode == 'pf':
+    mode = 'est'
+    mode = 'com'
+  else: 
+    mode = 'pf'
+
+#sumir com os frames não selecionados e aparecer o selecionado
+
+def change_mode():
+  if mode.get() == 'pf':
+    frm_est.pack_forget()
+    frm_com.pack_forget()
+    frm_pf.pack(fill='both', expand = True)
+  elif mode.get() == 'est':
+    frm_pf.pack_forget()
+    frm_com.pack_forget()
+    frm_est.pack(fill='both', expand = True)
+  else:
+    frm_est.pack_forget()
+    frm_pf.pack_forget()
+    frm_com.pack(fill='both', expand = True)
+
+#inserindo Radiobutton
+
+tk.Radiobutton(master=frm_rd_btn, text='Pessoa Física', value='pf', variable=mode, command= change_mode).pack(side='left') 
+tk.Radiobutton(master=frm_rd_btn, text='Estabelecimento', value='est', variable=mode, command= change_mode).pack(side='left') 
+tk.Radiobutton(master=frm_rd_btn, text='Comerciante', value='com', variable=mode, command= change_mode).pack(side='left')
+
+#botao de pf inicial
+frm_pf.pack(fill='both', expand = True)
+
+#remove ou add dias de funcionamento
+
+def add_or_remove_day(day):
+  if est_fields[8][2].__contains__(day):
+    est_fields[8][2].remove(day)
+  else:
+    est_fields[8][2].append(day)
+
+#adicionando botoes de UF
+
+def makeform(root, fields):
+   entries = {}
+   for field in fields:
+      row = tk.Frame(root)
+      lab = tk.Label(row, width=30, text=field[0]+": ", anchor='w')
+      row.pack(side = tk.TOP, fill = tk.X, padx = 5 , pady = 5)
+      lab.pack(side = tk.LEFT)
+      if field[1] == 'state':
+        ent = ttk.Combobox(row, textvariable=field[2])
+        ent['values'] = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC', 'SP', 'SE', 'TO']
+      else:
+        ent = tk.Entry(row)
+      ent.pack(side = tk.RIGHT, expand = tk.YES, fill = tk.X)
+      entries[field[1]] = ent
+
+   return entries
+
+# Inserindo as nformações
+
+pf_fields = (('Nome', 'name', ''), ('Email', 'email', ''), ('CPF', 'cpf', ''), ('Telefone', 'phone', ''), ('Data Nascimento', 'date', ''), ('Rua', 'street', ''), ('Bairro', 'district', ''), ('Cidade', 'city', ''), ('CEP', 'zip code', ''), ('Estado', 'state', ''))
+
+frm_pf.pack(fill='both', expand = True)
+
+com_fields = (('Nome', 'name', ''), ('Email', 'email', ''), ('CPF', 'cpf', ''), ('Telefone', 'phone', ''), ('Data Nascimento', 'date', ''))
+
+est_fields = (('Nome', 'name', ''), ('Que tipos de alimentos oferece?', 'food_type', ''), ('CNPJ', 'cnpj', ''), ('Rua', 'street', ''), ('Bairro', 'district', ''), ('Cidade', 'city', ''), ('CEP', 'zip code', ''), ('Estado', 'state', ''), ('Dias de funcionamento', 'opening_days', []), ('Horário de funcionamento', 'opening_hours', {'start': '', 'end': ''}), ('Faz delivery?', 'delivery', False), ('Cardápio', 'menu', []))
+
+#inserindo informações de estabelecimento
+
+
+
+#alternar entre pf e com
+
+pf_form = makeform(frm_pf, pf_fields)
+com_form = makeform(frm_com, com_fields)
+est_form = makeform(frm_est, [est_fields[i] for i in range(0, 8)])
+
+# Horario de funcionamento
+
+row = tk.Frame(frm_est)
+lab = tk.Label(row, width=30, text=est_fields[8][0]+": ", anchor='w')
+row.pack(side = tk.TOP, fill = tk.X, padx = 5 , pady = 5)
+lab.pack(side = tk.LEFT)
+row2 = tk.Frame(frm_est)
+row2.pack(side = tk.TOP, fill = tk.X, padx = 5 , pady = 5)
+est_form[est_fields[8][1]] = []
+for day in ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SAB']:
+  check_btn = tk.Checkbutton(row2, text=day, command=lambda: add_or_remove_day(day))
+  check_btn.pack(side = tk.LEFT)
+  est_form[est_fields[8][1]].append(check_btn)
+
+# HORARIO DE FUNCIONAMENTO
+
+row3 = tk.Frame(frm_est)
+lab2 = tk.Label(row3, width=30, text=est_fields[9][0]+": ", anchor='w')
+row3.pack(side = tk.TOP, fill = tk.X, padx = 5 , pady = 5)
+lab2.pack(side = tk.LEFT)
+row4 = tk.Frame(frm_est)
+row4.pack(side = tk.TOP, fill = tk.X, padx = 5 , pady = 5)
+lab_start = tk.Label(row4, width=6, text="Das: ", anchor='w')
+lab_start.pack(side = tk.LEFT)
+ent_start = tk.Entry(row4)
+ent_start.pack(side = tk.LEFT, expand = tk.YES, fill = tk.X)
+lab_end = tk.Label(row4, width=6, text=" Até: ", anchor='w')
+lab_end.pack(side = tk.LEFT)
+ent_end = tk.Entry(row4)
+ent_end.pack(side = tk.LEFT, expand = tk.YES, fill = tk.X)
+
+# DELIVERY
+
+row_delivery = tk.Frame(frm_est)
+row_delivery.pack(side = tk.TOP, fill = tk.X, padx = 5 , pady = 5)
+lab_delivery = tk.Label(row_delivery, width=30, text=est_fields[10][0]+" ", anchor='w')
+lab_delivery.pack(side = tk.LEFT)
+tk.Radiobutton(row_delivery, text='Sim', value=True, variable=est_fields[10][2]).pack(side='left')
+tk.Radiobutton(row_delivery, text='Não', value=False, variable=est_fields[10][2]).pack(side='left')
+
+def submit(entries):
+  data = {}
+  for field in entries:
+    data[field] = entries[field].get()
+  print(data)
+
+# butao cadastrar /all
+
+btn_submit = tk.Button(janela, text='Cadastrar', command=lambda: submit(pf_form if mode.get() == 'pf' else com_form if mode.get() == 'com' else est_form))
+btn_submit.pack(side='bottom')
+
+janela.mainloop()
